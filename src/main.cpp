@@ -104,6 +104,7 @@ void loop() {
     en.update();
      
     if (isBleConnected && en.bttn->risingEdge() && (now_ms - last_ble_ms > 100)) {
+        
         if( state == OpenMenu )
         {
             // press tab + F to search
@@ -130,12 +131,9 @@ void loop() {
         }
         // button has been pressed: type message
         last_ble_ms = now_ms;
+        Serial.println(state);
     }
-    else
-    {
-        state = OpenMenu;
-    }  
-    
+
     // heart beat
     if( now_ms - last_beat_ms > 500)
     {
