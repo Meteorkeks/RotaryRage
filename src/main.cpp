@@ -43,7 +43,6 @@
 #define BUTTON_PIN      12
 #define ENCODERA_PIN    14
 #define ENCODERB_PIN    27
-#define MESSAGE "Hello from ESP32\n"
 #define DEVICE_NAME "ESP32 Keyboard"
 
 
@@ -108,20 +107,23 @@ void loop() {
         {
             // press tab + F to search
             // type 'Kamerasteuerung' + return
-            typeText("Kamerasteuerung\n");
+            const char * msg = "Kamerasteuerung\n";
+            typeText(msg);
+            Serial.println(msg);
         }
         else if (state == OpenSubMenu)
         {
             // press tab + F to search
             // type 'Beleuchtung' + return
-            typeText("Beleuchtung\n");
+            const char * msg = "Beleuchtung\n";
+            typeText(msg);
+            Serial.println(msg);
         }
         else
         {
             reset();
         }
         // button has been pressed: type message
-        Serial.println(MESSAGE);
         last_ble_ms = now_ms;
     }
     else
