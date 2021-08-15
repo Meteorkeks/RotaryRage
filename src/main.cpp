@@ -78,7 +78,8 @@ void setup() {
 // States for flow controll
 enum EncoderState {
     OpenMenu,
-    OpenSubMenu,    
+    OpenSubMenu,
+    Done, 
 };
 
 bool last_bttn = false;
@@ -110,6 +111,8 @@ void loop() {
             const char * msg = "Kamerasteuerung\n";
             typeText(msg);
             Serial.println(msg);
+
+            state = OpenSubMenu;
         }
         else if (state == OpenSubMenu)
         {
@@ -118,6 +121,8 @@ void loop() {
             const char * msg = "Beleuchtung\n";
             typeText(msg);
             Serial.println(msg);
+
+            state = Done;
         }
         else
         {
@@ -329,5 +334,5 @@ void typeText(const char* text) {
  */
 void reset()
 {
-
+    state = OpenMenu;
 }
