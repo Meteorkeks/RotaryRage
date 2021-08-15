@@ -13,7 +13,7 @@ Bounce::Bounce(uint8_t pin_number, uint16_t timeout)
 /**
  * @brief 
  * 
- * See slides for more https://docs.google.com/presentation/d/1O3VIUvFkATJrm6YaQaJuq9ZdTl-Y60neox94lireewk/edit#slide=id.ge8b705876d_0_0
+ * See slides for more https://docs.google.com/presentation/d/1vTbfDcuz6WX5NKOsSmGGm6JItUb8chF0BQySve-Xr3M/edit#slide=id.p
  * 
  * @return true 
  * @return false 
@@ -23,30 +23,24 @@ bool Bounce::update() {
     int current_state = digitalRead(pin_number);
 
     if (is_debouncing) {
+        // do not update internal state with new state during debounce period
         u_long new_time_stamp = millis();
         u_long time_elapsed_since_trigger_event = new_time_stamp - state_time;
         if (time_elapsed_since_trigger_event > timeout_ms) {
-            // propagate change
-            this->current_state = current_state;
             is_debouncing = false;
-            return true;
         }
         return false;
     }
     else {
-        bool needs_debouncing = current_state ^ last_state;
-        if (needs_debouncing) {
+        this->last_state = this->current_state;
+        this->current_state = current_state;
+        bool change = current_state ^ last_state;
+        if (change) {
             // start debouncing
             state_time = millis();
             is_debouncing = true;
-            return false;
         }
-        else {
-            // pass through state change
-            this->last_state = this->current_state;
-            this->current_state = current_state;
-            return false;
-        }
+        return change;
     }
 }
 
