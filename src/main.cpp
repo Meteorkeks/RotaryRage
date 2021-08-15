@@ -45,15 +45,14 @@
 #define ENCODERB_PIN    27
 #define DEVICE_NAME "ESP32 Keyboard"
 
-
 #include "bouncer.h"
 #include "encoder.h"
-
-
 
 // Forward declarations
 void bluetoothTask(void*);
 void typeText(const char* text);
+void typeCtrlF();
+void typeTabF();
 void reset();
 
 // auxilary variables
@@ -110,6 +109,10 @@ void loop() {
             // press tab + F to search
             // type 'Kamerasteuerung' + return
             const char * msg = "Kamerasteuerung\n";
+            //typeCtrlF();
+            Serial.println("Sendign Tab+f");
+            typeTabF();
+            delay(100);
             typeText(msg);
             Serial.println(msg);
 
@@ -119,6 +122,10 @@ void loop() {
         {
             // press tab + F to search
             // type 'Beleuchtung' + return
+            //typeCtrlF();
+            Serial.println("Sendign Tab+f");
+            typeTabF();
+            delay(100);
             const char * msg = "Beleuchtung\n";
             typeText(msg);
             Serial.println(msg);
@@ -201,6 +208,7 @@ BLECharacteristic* input;
 BLECharacteristic* output;
 
 const InputReport NO_KEY_PRESSED = { };
+
 
 
 /*
@@ -324,6 +332,58 @@ void typeText(const char* text) {
 
         delay(5);
     }
+}
+
+void typeTabF()
+{
+    // create input report
+    InputReport tab = {
+        .modifiers = 0,
+        .reserved = 0,
+        .pressedKeys = {
+            0x2b, 0, 0, 0, 0, 0
+            //0x09, 0, 0, 0
+        }
+    };
+
+    // send the input report
+    input->setValue((uint8_t*)&tab, sizeof(tab));
+    input->notify();
+
+    delay(5);
+    
+    // release all keys between two characters; otherwise two identical
+    // consecutive characters are treated as just one key press
+    input->setValue((uint8_t*)&NO_KEY_PRESSED, sizeof(NO_KEY_PRESSED));
+    input->notify();
+
+    delay(5);
+}
+
+void typeCtrlF()
+{
+    // create input report
+    InputReport report = {
+        .modifiers = KEY_CTRL,
+        .reserved = 0,
+        .pressedKeys = {
+            0x09,
+            0, 0, 0, 0, 0
+        }
+    };
+
+    // send the input report
+    input->setValue((uint8_t*)&report, sizeof(report));
+    input->notify();
+
+    delay(5);
+
+    // release all keys between two characters; otherwise two identical
+    // consecutive characters are treated as just one key press
+    input->setValue((uint8_t*)&NO_KEY_PRESSED, sizeof(NO_KEY_PRESSED));
+    input->notify();
+
+    delay(5);
 }
 
 /*
