@@ -39,6 +39,7 @@
 
 
 // Change the below values if desired
+#define LED             33
 #define BUTTON_PIN      12
 #define ENCODERA_PIN    14
 #define ENCODERB_PIN    27
@@ -69,6 +70,7 @@ void setup() {
     pinMode(BUTTON_PIN, INPUT_PULLUP);
     pinMode(ENCODERA_PIN, INPUT_PULLUP);
     pinMode(ENCODERB_PIN, INPUT_PULLUP);
+    pinMode(LED, OUTPUT);
 
     // start Bluetooth task
     xTaskCreate(bluetoothTask, "bluetooth", 20000, NULL, 5, NULL);
@@ -86,6 +88,8 @@ bool last_b = false;
 
 unsigned long last_bttn_ms;
 unsigned long last_ble_ms;
+unsigned long last_beat_ms;
+bool beat = false;
 
 Encoder en(ENCODERA_PIN, ENCODERB_PIN, BUTTON_PIN);
 EncoderState state = OpenMenu;
@@ -118,13 +122,20 @@ void loop() {
         }
         // button has been pressed: type message
         Serial.println(MESSAGE);
-        typeText(MESSAGE);
         last_ble_ms = now_ms;
     }
     else
     {
         state = OpenMenu;
-    }   
+    }  
+    
+    // heart beat
+    if( now_ms - last_beat_ms > 500)
+    {
+        digitalWrite(LED, beat);
+        beat ^= true;
+        last_beat_ms = now_ms;
+    }
 }
 
 // Message (report) sent when a key is pressed or released
