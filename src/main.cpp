@@ -40,8 +40,13 @@
 
 // Change the below values if desired
 #define BUTTON_PIN 12
+#define ROTARY_TA  14
+#define ROTARY_TB  27
 #define MESSAGE "Hello from ESP32\n"
 #define DEVICE_NAME "ESP32 Keyboard"
+
+#include "bouncer.h"
+#include "encoder.h"
 
 
 
@@ -62,7 +67,7 @@ void setup() {
 
     // configure pin for button
     pinMode(BUTTON_PIN, INPUT_PULLUP);
-
+    
     // start Bluetooth task
     xTaskCreate(bluetoothTask, "bluetooth", 20000, NULL, 5, NULL);
 }
@@ -80,7 +85,7 @@ bool last_b = false;
 unsigned long last_bttn_ms;
 unsigned long last_ble_ms;
 
-Encoder en;
+Encoder en(ROTARY_TA, ROTARY_TB, BUTTON_PIN);
 EncoderState state = OpenMenu;
 
 void loop() {  
@@ -123,56 +128,6 @@ void loop() {
 
 
 
-/**
- * @brief Debounce a given pin
- * 
- */
-class Bounce {
-    public:
-        uint8_t pin_number;
-        uint16_t timeout_ms; 
-
-        // return true if last update() leads to xxxEdge
-        bool fallingEdge();
-        bool risingEdge();
-
-
-        Bounce(uint8_t pin_number, uint16_t timeout)
-        {
-            pin_number = pin_number;
-            timeout = timeout;
-            last_state;
-        }
-
-    bool update() {
-        // get current state
-        int current_state = digitalRead(pin_number);
-
-        if (is_debouncing) {
-            u_long new_time_stamp = millis();
-            u_long time_elapsed_since_trigger_event = new_time_stamp - state_time;
-            if (time_elapsed_since_trigger_event > timeout_ms) {
-                last_state = current_state;
-                return true;
-            }
-        }
-        else {
-            if (current_state ^ last_state) {
-                // start debouncing
-                state_time = millis();
-                is_debouncing = true;
-            }
-            else {
-                return false;
-            }
-        }
-    }
-
-    private:
-        bool last_state;
-        u_long state_time;
-        bool is_debouncing;
-}
 
 
 
@@ -180,91 +135,8 @@ class Bounce {
 
 
 
-class Encoder {
-  public:
-    // pin numbers
-    int enA_pin, enB_pin, bttn_pin;
-    bool stateA = LOW;
-    bool stateB = LOW;    
-    
-    // continuous rotary value
-    int value = 0;
-    int value_last = 0;
-    
-    // push button state
-    bool button = false;
-    bool button_last = false;
 
-    // debounce wrapper for pins
-    Bounce * enA;
-    Bounce * enB;
-    Bounce * bttn;
-    
-    /**
-     * @brief Constructs a new rotary encoder object
-     * 
-     * @param encoderA pin encoder A
-     * @param encoderB pin encoder B
-     * @param taster pin push button
-     */
-    Encoder(uint8_t encoderA, uint8_t encoderB, uint8_t taster) {
 
-      enA_pin = encoderA;
-      enB_pin = encoderB;
-      bttn_pin = taster;
-
-      // debouncing pin wrapper
-      enA  = new Bounce(enA_pin,   3);
-      enB  = new Bounce(enB_pin,   3);
-      bttn = new Bounce(bttn_pin, 10);
-        
-        
-      pinMode(enA_pin, INPUT_PULLUP);
-      pinMode(enB_pin, INPUT_PULLUP);
-      pinMode(taster,  INPUT_PULLUP);
-    }
-  
-    void update() {
-        if(enB->update()) 
-        {
-            if(enB->fallingEdge()) 
-            {
-                stateB = LOW;
-            }
-            if(enB->risingEdge()) 
-            {
-                stateB = HIGH;
-            }
-        }
-            
-        if(enA->update()) 
-        {
-            if(enA->fallingEdge()) 
-            {
-                value += (stateB)?1:-1;
-            }
-        }
-
-        if(bttn->update()) 
-        {
-            if(bttn->fallingEdge()) {
-                button ^= true;
-            }
-        }
-    }
-
-    int getValueDiff() {
-      int diff = value - value_last;
-      value_last = value;
-      return (diff>20)?0:diff;
-    }
-
-    bool getButtonDiff() {
-      bool button_diff = button != button_last;
-      button_last = button;
-      return button_diff;
-    }  
-};
 
 
 // Message (report) sent when a key is pressed or released
