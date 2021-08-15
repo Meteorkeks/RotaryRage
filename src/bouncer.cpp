@@ -30,3 +30,6 @@ bool Bounce::update() {
         }
     }
 }
+
+bool Bounce::fallingEdge() {}
+bool Bounce::risingEdge() {}

@@ -1,6 +1,7 @@
 #include <Arduino.h>
-#include "encoder.h"
-
+#include "bouncer.h"
+#ifndef _ENCODER_H_
+#define _ENCODER_H_
 class Encoder {
   public:
     // pin numbers
@@ -36,3 +37,5 @@ class Encoder {
 
     bool getButtonDiff();
 };
+
+#endif

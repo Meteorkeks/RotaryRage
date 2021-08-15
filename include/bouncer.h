@@ -1,5 +1,8 @@
 #include <Arduino.h>
 
+#ifndef _BOUNCER_H_
+#define _BOUNCER_H_
+
 /**
  * @brief Debounce a given pin
  * 
@@ -22,4 +25,6 @@ class Bounce {
         bool last_state;
         u_long state_time;
         bool is_debouncing;
-}
+};
+
+#endif
