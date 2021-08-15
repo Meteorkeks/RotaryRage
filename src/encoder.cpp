@@ -8,17 +8,19 @@ Encoder::Encoder(uint8_t encoderA, uint8_t encoderB, uint8_t taster)
     bttn_pin = taster;
 
     // debouncing pin wrapper
-    enA = new Bounce(enA_pin, 3);
-    enB = new Bounce(enB_pin, 3);
+    enA =  new Bounce(enA_pin, 3);
+    enB =  new Bounce(enB_pin, 3);
     bttn = new Bounce(bttn_pin, 10);
 
     pinMode(enA_pin, INPUT_PULLUP);
     pinMode(enB_pin, INPUT_PULLUP);
-    pinMode(taster, INPUT_PULLUP);
+    pinMode(taster,  INPUT_PULLUP);
 }
 
-void Encoder::update()
+bool Encoder::update()
 {
+    bool something_changed = false;
+
     if (enB->update())
     {
         if (enB->fallingEdge())
@@ -36,6 +38,17 @@ void Encoder::update()
         if (enA->fallingEdge())
         {
             value += (stateB) ? 1 : -1;
+            something_changed = true;
+            
+            
+            // DEBUG
+            Serial.print("Encoder was rotated ");
+
+            if(stateB) 
+                Serial.println("left");
+            else    
+                Serial.println("right");
+                
         }
     }
 
@@ -43,9 +56,20 @@ void Encoder::update()
     {
         if (bttn->fallingEdge())
         {
-            button ^= true;
+            button = true;
+            // DEBUG
+            Serial.println("Button was pushed down.");
         }
+        if (bttn->risingEdge())
+        {
+            button = false;
+            // DEBUG
+            Serial.println("Button was released.");
+        }
+        something_changed = true;
     }
+
+    return something_changed;
 }
 
 int Encoder::getValueDiff()

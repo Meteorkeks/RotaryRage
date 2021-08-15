@@ -32,8 +32,9 @@ class Encoder {
      * @param taster pin push button
      */
     Encoder(uint8_t encoderA, uint8_t encoderB, uint8_t taster);
-  
-    void update();
+
+    // return true if something changed since last update call
+    bool update();
 
     int getValueDiff();
 
