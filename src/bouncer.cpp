@@ -4,7 +4,6 @@ Bounce::Bounce(uint8_t pin_number, uint16_t timeout)
 {
     pin_number = pin_number;
     timeout = timeout;
-    last_state;
 }
 
 bool Bounce::update() {

@@ -1,7 +1,7 @@
-#include <Arduino.h>
-
 #ifndef _BOUNCER_H_
 #define _BOUNCER_H_
+
+#include <Arduino.h>
 
 /**
  * @brief Debounce a given pin
@@ -27,4 +27,4 @@ class Bounce {
         bool is_debouncing;
 };
 
-#endif
+#endif //_BOUNCER_H_

@@ -39,9 +39,9 @@
 
 
 // Change the below values if desired
-#define BUTTON_PIN 12
-#define ENCODERA 14
-#define ENCODERB 27
+#define BUTTON_PIN      12
+#define ENCODERA_PIN    14
+#define ENCODERB_PIN    27
 #define MESSAGE "Hello from ESP32\n"
 #define DEVICE_NAME "ESP32 Keyboard"
 
@@ -56,18 +56,19 @@ void bluetoothTask(void*);
 void typeText(const char* text);
 void reset();
 
-
-
-class Encoder;
-
+// auxilary variables
 bool isBleConnected = false;
 
-
+/*##################################################
+#############           SETUP             ##########
+############################# ####################*/
 void setup() {
     Serial.begin(115200);
 
     // configure pin for button
     pinMode(BUTTON_PIN, INPUT_PULLUP);
+    pinMode(ENCODERA_PIN, INPUT_PULLUP);
+    pinMode(ENCODERB_PIN, INPUT_PULLUP);
 
     // start Bluetooth task
     xTaskCreate(bluetoothTask, "bluetooth", 20000, NULL, 5, NULL);
@@ -86,9 +87,12 @@ bool last_b = false;
 unsigned long last_bttn_ms;
 unsigned long last_ble_ms;
 
-Encoder en(ENCODERA, ENCODERB, BUTTON_PIN);
+Encoder en(ENCODERA_PIN, ENCODERB_PIN, BUTTON_PIN);
 EncoderState state = OpenMenu;
 
+/*#################################################
+#############           LOOP             ##########
+#################################################*/
 void loop() {  
     unsigned long now_ms = millis();
 
