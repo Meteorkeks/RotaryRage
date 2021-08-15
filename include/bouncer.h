@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 /**
- * @brief Debounce a given pin
+ * @brief Debounce a given pin active low binary input signal
  * 
  */
 class Bounce {

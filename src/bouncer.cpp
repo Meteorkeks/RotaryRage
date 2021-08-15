@@ -20,7 +20,7 @@ Bounce::Bounce(uint8_t pin_number, uint16_t timeout)
  */
 bool Bounce::update() {
     // get current state
-    int current_state = digitalRead(pin_number);
+    int incoming_state = digitalRead(pin_number);
 
     if (is_debouncing) {
         // do not update internal state with new state during debounce period
@@ -33,8 +33,8 @@ bool Bounce::update() {
     }
     else {
         this->last_state = this->current_state;
-        this->current_state = current_state;
-        bool change = current_state ^ last_state;
+        this->current_state = incoming_state;
+        bool change = this->current_state != this->last_state;
         if (change) {
             // start debouncing
             state_time = millis();
@@ -46,11 +46,11 @@ bool Bounce::update() {
 
 bool Bounce::fallingEdge() 
 {
-    return this->last_state && !this->current_state;
+    return this->last_state && !this->current_state && !is_debouncing;
 }
 bool Bounce::risingEdge()
 {
-    return !this->last_state && this->current_state;
+    return !this->last_state && this->current_state && !is_debouncing;
 }
 
 bool Bounce::change()
