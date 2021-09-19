@@ -32,3 +32,5 @@
 *.app
 
 .pio/**
+**credentials**
+**Credentials**
