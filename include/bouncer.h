@@ -1,7 +1,9 @@
 #ifndef _BOUNCER_H_
 #define _BOUNCER_H_
 
-#include <Arduino.h>
+#include <cstdint>
+unsigned long millis();
+int digitalRead(int);
 
 /**
  * @brief Debounce a given pin active low binary input signal
@@ -23,7 +25,7 @@ class Bounce {
     private:
         bool last_state;
         bool current_state;
-        u_long state_time;
+        unsigned long state_time;
         bool is_debouncing;
 };
 
