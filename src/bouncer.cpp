@@ -1,4 +1,5 @@
-#include "bouncer.h"
+#include "../include/bouncer.h"
+#include <cstdint>
 
 Bounce::Bounce(uint8_t pin_number, uint16_t timeout)
 {
@@ -24,8 +25,8 @@ bool Bounce::update() {
 
     if (is_debouncing) {
         // do not update internal state with new state during debounce period
-        u_long new_time_stamp = millis();
-        u_long time_elapsed_since_trigger_event = new_time_stamp - state_time;
+        unsigned long new_time_stamp = millis();
+        unsigned long time_elapsed_since_trigger_event = new_time_stamp - state_time;
         if (time_elapsed_since_trigger_event > timeout_ms) {
             is_debouncing = false;
         }
